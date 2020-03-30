@@ -14,7 +14,9 @@
         "symfony/framework-bundle": "4.4.*",
         "symfony/twig-pack": "^1.0",
         "symfony/web-server-bundle": "4.4.*",
-        "symfony/yaml": "4.4.*"
+        "symfony/yaml": "4.4.*",
+      "ext-json": "*",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "easycorp/easy-log-handler": "^1.0.7",

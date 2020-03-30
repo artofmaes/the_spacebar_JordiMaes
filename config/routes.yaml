@@ -1,3 +1,6 @@
 #index:
 #    path: /
 #    controller: App\Controller\ArticleController::homepage
+#api:
+#    path: /api
+#    controller: App\Controller\TaskController::homepage
