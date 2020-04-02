@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% block title %}Steden{% endblock %}
+{% block body %}
+    {#yay!#}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="show-article-container p-3 mt-4">
+
+                    <div class="row">
+                                {% for row in rows %}
+                                    <div class="col-sm-4">
+                                        <h2>{{ row.cit_name }}</h2>
+                                        <p>Inhabitants: {{ row.cit_inhabitants }}</p>
+                                        <img class="img-rounded img-fluid" src="/images/{{ row.img_filename }}.jpg" alt="">
+                                        <p>X-Coordinate: {{ row.cit_coordinate_x }}</p>
+                                        <p>Y-Coordinate: {{ row.cit_coordinate_y }}</p>
+                                        <a href="#" class="primary-button">Meer Info</a>
+                                    </div>
+                                {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -4,3 +4,6 @@
 #api:
 #    path: /api
 #    controller: App\Controller\TaskController::homepage
+#steden:
+#    path: /steden
+#    controller: App\Controller\CityController::homepage

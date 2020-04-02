@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TaskController extends AbstractController
 {
 
-    function GetConnection()
+    public function GetConnection()
     {
         $dsn = "mysql:host=localhost;dbname=php2stedensteven";
         $user = "root";
@@ -53,10 +53,10 @@ class TaskController extends AbstractController
         $stmt = $pdo->prepare($query);
 
 
-        if ($stmt->execute()) echo 'Ding! Taak aangemaakt!';
+        if ($stmt->execute()) return new JsonResponse('Ding! Taak aangemaakt!');
         else {
             echo $stmt->errorInfo();
-            echo 'Oeps! Iets verkeerd gedaan?';
+            return new JsonResponse('Oeps! Iets verkeerd gedaan?');
         }
 
     }
@@ -89,10 +89,10 @@ class TaskController extends AbstractController
         $query = "UPDATE taak SET taa_omschr = '$taa_omschr', taa_datum = '$taa_datum' where taa_id = '$taa_id'";
         $stmt = $pdo->prepare($query);
 
-        if ($stmt->execute()) echo 'Ding! Taak werd aangepast.';
+        if ($stmt->execute()) return new JsonResponse('Ding! Taak werd aangepast.') ;
         else {
             echo $stmt->errorInfo();
-            echo 'Oeps! Iets verkeerd gedaan tijdens het updaten?';
+            return new JsonResponse('Oeps! Iets verkeerd gedaan tijdens het updaten?');
         }
     }
 
@@ -107,10 +107,10 @@ class TaskController extends AbstractController
 
         $query = "DELETE FROM taak where taa_id = '$taa_id'";
         $stmt = $pdo->prepare($query);
-        if ($stmt->execute()) echo 'Ding! Taak werd verwijderd.';
+        if ($stmt->execute()) return new JsonResponse('Ding! Taak werd verwijderd.');
         else {
             echo $stmt->errorInfo();
-            echo 'Oeps! Iets verkeerd gedaan tijdens de verwijdering?';
+            return new JsonResponse('Oeps! Iets verkeerd gedaan tijdens de verwijdering?');
         }
     }
 
