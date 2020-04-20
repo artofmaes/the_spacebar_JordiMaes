@@ -2,20 +2,26 @@
 
 
 namespace App\Service;
+use Michelf\MarkdownInterface;
 use PDO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class DataService
 {
     //DB Params
-    private $host = 'localhost';
-    private $db_name = 'php2stedensteven';
-    private $username = 'root';
-    private $password = 'Xrkwq349';
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
     private $pdo;
 
     public function __construct()
     {
+        $this->host = 'env(DB_HOST)';
+        $this->db_name = 'env(string:DB_NAME)';
+        $this->username = 'env(string:DB_USER)';
+        $this->password = 'env(string:DB_PASS)';
+        dump($this->host, $this->db_name, $this->username, $this->password); die;
         $this->pdo = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->db_name, $this->username, $this->password);
     }
 
