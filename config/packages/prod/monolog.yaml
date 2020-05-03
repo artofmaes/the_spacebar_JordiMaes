@@ -1,5 +1,13 @@
 monolog:
     handlers:
+        channels: [ 'api' ]
+            handlers:
+                api:
+                    type: stream
+                    path: "%kernel.logs_dir%/dev/api.log"
+                    level: info
+                    channels: [ 'api' ]
+
         main:
             type: fingers_crossed
             action_level: error

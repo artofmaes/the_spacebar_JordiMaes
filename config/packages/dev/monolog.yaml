@@ -1,5 +1,15 @@
 monolog:
     handlers:
+        api:
+            type: stream
+            path: "%kernel.logs_dir%/dev/api.log"
+            level: info
+            channels: [ 'api' ]
+        sql:
+            type: stream
+            path: "%kernel.logs_dir%/dev/sql.log"
+            level: info
+            channels: [ 'sql' ]
         main:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"

@@ -4,88 +4,94 @@
 namespace App\Controller;
 
 
-use App\Service\DataService;
+
+use App\Service\PDO_Manager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class TaskController extends AbstractController
 {
+    private $pdoManager;
+    private $apiLogger;
+
+    public function __construct( PDO_Manager $pdoManager, LoggerInterface $apiLogger)
+    {
+        $this->pdoManager = $pdoManager;
+        $this->apiLogger = $apiLogger;
+    }
+
+    private function log()
+    {
+        $request = Request::createFromGlobals();
+
+        $this->apiLogger->log( LogLevel::INFO, $request->getPathInfo(), [
+            'URI' => $request->getPathInfo(),
+            'method' => $request->getMethod(),
+            'querystring' => $request->getQueryString()
+        ]);
+    }
+
+
 
     //ALLES VOOR DE TAKENPAGINA - GET EN POST
     /**
      * @Route("/api/taken", name="taken_show", methods={"GET"})
      */
-    public function getTaken(DataService $dataService){
-
-        $sql = 'SELECT * FROM taak';
-        return $dataService->GetDataAPI($sql);
-
+    public function getTasks()
+    {
+        $this->log();
+        $rows = $this->pdoManager->GetData( "select * from taak" );
+        return $this->json([ 'rows' => $rows ]);
     }
+
     /**
      * @Route("/api/taken", methods={"POST"})
      */
-    public function addData(DataService $dataService){
-        $data = json_decode(file_get_contents('php://input'));
-        //zijn de veldjes klaar?
-        if (!isset($data->taa_datum) or !isset($data->taa_omschr)) {
-            print 'Bruh, vul alles eens in';
-            die();
-
-        } else {
-            $taa_omschr    = htmlentities($data->taa_omschr);
-            $taa_datum     = htmlentities($data->taa_datum);
-        }
-        $query = "INSERT INTO taak SET taa_datum = '$taa_datum', taa_omschr = '$taa_omschr'";
-        $true= new JsonResponse('Ding! Taak aangemaakt!');
-        $false= new JsonResponse('Oeps! Iets verkeerd gedaan?');
-        return $dataService->ExecuteSQLAPI($query, $true , $false);
-
-
+    public function createTask()
+    {
+        $ins = "insert into taak SET taa_datum='" . $_POST['datum'] . "' , taa_omschr='" . $_POST['omschr'] . "'";
+        $result = $this->pdoManager->ExecuteSQL($ins);
+        return $this->json([ 'result' => $result ]);
     }
 
     //ALLES VOOR DE SPECIFIEKE TAKENPAGINA - GET, PUT EN DELETE
     /**
      * @Route("/api/taak/{slug}", name="spectaak_show", methods={"GET"})
      */
-    public function getTaak($slug, DataService $dataService)
+    public function getOneTask($slug)
     {
-        $sql ='SELECT * FROM taak where taa_id = "'.$slug.'"';
-        return $dataService->GetDataAPI($sql);
+        $this->log();
+        $rows = $this->pdoManager->GetData( "select * from taak where taa_id= '$slug'" );
+        return $this->json([ 'rows' => $rows ]);
     }
 
     //PUT
     /**
      * @Route("/api/taak/{slug}", methods={"PUT"})
      */
-    public function updateData($slug, DataService $dataService){
+    public function updateTask($slug)
+    {
+        $data = json_decode(file_get_contents("php://input"));
 
-        $data = json_decode(file_get_contents('php://input'));
-
-        $taa_id = htmlentities($slug);
-        $taa_omschr = htmlentities($data->taa_omschr);
-        $taa_datum = htmlentities($data->taa_datum);
-
-        $query = "UPDATE taak SET taa_omschr = '$taa_omschr', taa_datum = '$taa_datum' where taa_id = '$taa_id'";
-        $true = new JsonResponse('Ding! Taak werd aangepast.');
-        $false= new JsonResponse('Oeps! Iets verkeerd gedaan tijdens het updaten?');
-        return $dataService->ExecuteSQLAPI($query,$true,$false);
-
+        $ins = "update taak SET taa_datum='" . $data->datum . "' , taa_omschr='" . $data->omschr . "' where taa_id='$slug'";
+        $result = $this->pdoManager->ExecuteSQL($ins);
+        return $this->json([ 'result' => $result ]);
     }
 
     //DELETE
     /**
      * @Route("/api/taak/{slug}", methods={"DELETE"})
      */
-    public function deleteData($slug, DataService $dataService){
-
-        //clean user-input
-        $taa_id = htmlentities($slug);
-
-        $query = "DELETE FROM taak where taa_id = '$taa_id'";
-        $true= new JsonResponse('Ding! Taak werd verwijderd.');
-        $false=  new JsonResponse('Oeps! Iets verkeerd gedaan tijdens de verwijdering?');
-        return $dataService->ExecuteSQLAPI($query,$true,$false);
+    public function deleteTask($slug)
+    {
+        $del = "delete from taak where taa_id='$slug'";
+        $result = $this->pdoManager->ExecuteSQL($del);
+        return $this->json([ 'result' => $result ]);
     }
+
 
 }
